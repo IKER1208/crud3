@@ -25,7 +25,9 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app
+
+/resenas');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -67,7 +69,9 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app
+
+/resenas/' . $id);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -125,7 +129,9 @@ class IdiomaController extends Controller
             // Crear la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/", $resenaData);
+            ])->post("https://1826-187-190-56-49.ngrok-free.app
+
+/resenas/", $resenaData);
 
             if ($validate->fails()) {
                 return response()->json([
@@ -137,7 +143,9 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app
+
+/resenas', [
                         'user_id' => 1, // Usar nombre del request
                         'cancion_id' => 1, // Usar país del request
                     ]);
@@ -218,7 +226,7 @@ class IdiomaController extends Controller
             // Actualizar la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/" . $id, $resenaData);
+            ])->put("https://1826-187-190-56-49.ngrok-free.app/resenas/" . $id, $resenaData);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -272,7 +280,9 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/{$id}");
+            ])->delete("https://1826-187-190-56-49.ngrok-free.app
+
+/resenas/{$id}");
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

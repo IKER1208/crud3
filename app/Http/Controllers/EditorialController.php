@@ -26,7 +26,7 @@ class EditorialController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/artistas');
 
             // Devolver la respuesta con los editoriales y los datos de la API externa
             return response()->json([
@@ -61,7 +61,7 @@ class EditorialController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/artistas/' . $id);
 
             return response()->json([
                 'msg' => 'Editorial encontrada',
@@ -110,7 +110,7 @@ class EditorialController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/artistas', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'nacionalidad' => $faker->country, // Usar país del request
             ]);
@@ -184,7 +184,7 @@ class EditorialController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/artistas', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'nacionalidad' => $faker->country, // Usar país del request
             ]);
@@ -242,7 +242,7 @@ class EditorialController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/artistas/' . $id);
     
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

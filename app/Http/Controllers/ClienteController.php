@@ -34,7 +34,7 @@ class ClienteController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/discografias');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -83,7 +83,7 @@ class ClienteController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/discografias/' . $id);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -138,7 +138,7 @@ class ClienteController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/discografias', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'telefono' => $faker->phoneNumber,
                 'direccion' => $faker->address,
@@ -211,8 +211,7 @@ class ClienteController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias', [
-
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/discografias', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'telefono' => $faker->phoneNumber,
                 'direccion' => $faker->address,                // Usar país del request
@@ -268,7 +267,7 @@ class ClienteController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/discografias/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

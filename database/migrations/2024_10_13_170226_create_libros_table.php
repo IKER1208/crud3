@@ -14,7 +14,7 @@ class CreateLibrosTable extends Migration
             $table->timestamps();
             $table->SoftDeletes();
 
-            $table->foreign('editorial_id')->references('id')->on('editorials')->onDelete('cascade');
+            $table->foreign('editorial_id')->references('id')->on('editoriales')->onDelete('cascade');
         });
     }
 

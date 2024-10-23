@@ -26,7 +26,7 @@ class SucursalController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/generos');
 
             // Devolver la respuesta con las sucursales y los datos de la API externa
             return response()->json([
@@ -62,7 +62,7 @@ class SucursalController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/generos/' . $id);
 
             return response()->json([
                 'msg' => 'Sucursal encontrada',
@@ -110,7 +110,7 @@ class SucursalController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/generos', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'descripcion' => $faker->sentence, // Usar dirección del request
             ]);
@@ -183,7 +183,7 @@ class SucursalController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/generos', [
                 'nombre' => $faker->name, // Usar nombre del request
                 'descripcion' => $faker->sentence, // Usar dirección del request
             ]);
@@ -241,7 +241,7 @@ class SucursalController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/generos/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

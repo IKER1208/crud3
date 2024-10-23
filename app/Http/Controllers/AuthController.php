@@ -25,7 +25,7 @@ class AuthController extends Controller
         ], 400);
     }
 
-    $response = Http::post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/login', [
+    $response = Http::post('https://1826-187-190-56-49.ngrok-free.app/login', [
         'email' => $request->email,
         'password' => $request->password,
     ]);
@@ -84,7 +84,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $register = Http::post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/register', [
+        $register = Http::post('https://1826-187-190-56-49.ngrok-free.app/register', [
             'full_name' => $request->name,
             'email' => $request->email,
             'password' => $request->password

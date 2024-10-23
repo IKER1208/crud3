@@ -14,7 +14,7 @@ class CreateEmpleadosTable extends Migration
             $table->SoftDeletes();
             $table->timestamps();
 
-            $table->foreign('sucursal_id')->references('id')->on('sucursals')->onDelete('cascade');
+            $table->foreign('sucursal_id')->references('id')->on('sucursales')->onDelete('cascade');
         });
     }
 

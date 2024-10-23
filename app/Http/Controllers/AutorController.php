@@ -27,7 +27,7 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/playlists');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -40,7 +40,7 @@ class AutorController extends Controller
             return response()->json([
                 'msg' => 'Autores y albums encontrados',
                 'autores' => $autores,
-                'albums' => $dataResponse->json()
+                'playlists' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
@@ -72,7 +72,7 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists/{$id}");
+            ])->get("https://1826-187-190-56-49.ngrok-free.app/playlists/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -127,10 +127,10 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/playlists', [
                 'nombre' => $faker->firstName,
                 'descripcion' => $faker->sentence,
-                'user_id' => 1,
+                'user_id' =>  $request->input('id'),
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -200,10 +200,10 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists/' . $id, [
+            ])->put('https://1826-187-190-56-49.ngrok-free.app/playlists/' . $id, [
                 'nombre' => $faker->firstName,
                 'descripcion' => $faker->sentence,
-                'user_id' => 1,
+                'user_id' =>  $request->input('id'),
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -259,7 +259,7 @@ class AutorController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/playlists/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

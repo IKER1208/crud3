@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Prestamo;
+use App\Models\Token;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Faker\Factory as Faker;
 
 class PrestamoController extends Controller
@@ -26,7 +28,7 @@ class PrestamoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/singles');
 
             // Devolver la respuesta con los préstamos y las playlists de la API externa
             return response()->json([
@@ -65,7 +67,7 @@ class PrestamoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/singles/' . $id);
 
             // Devolver la respuesta con el préstamo y los datos de la API externa
             return response()->json([
@@ -120,7 +122,7 @@ class PrestamoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/singles', [
                         'nombre' => $faker->name, // Usar nombre del request
                         'formato' => $formato, // Usar formato del request
                     ]);
@@ -132,18 +134,9 @@ class PrestamoController extends Controller
                 ], 400);
             }
 
-
-            $dataResponse = Http::withHeaders([
-                'Authorization' => $token_noe
-            ])->post("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles", [
-                        'nombre' => $faker->sentence,
-                        'descripcion' => $faker->sentence,
-                        'user_id' => 1,
-                    ]);
-
             $prestamo = Prestamo::create([
                 'cliente_id' => $request->input('cliente_id'),
-                'libro_id' => $request->input('libro_id'),
+                'libro_id' => $request->input('cliente_id'),
                 'fecha_prestamo' => $request->input('fecha_prestamo'),
                 'fecha_devolucion' => $request->input('fecha_devolucion'),
             ]);
@@ -218,14 +211,14 @@ class PrestamoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles/" . $id, [
+            ])->put("https://1826-187-190-56-49.ngrok-free.app/singles/" . $id, [
                         'nombre' => $faker->sentence,
                         'formato' => $formato,
                     ]);
 
             $prestamo->update([
                 'cliente_id' => $request->input('cliente_id'),
-                'libro_id' => $request->input('libro_id'),
+                'libro_id' => $request->input('cliente_id'),
                 'fecha_prestamo' => $request->input('fecha_prestamo'),
                 'fecha_devolucion' => $request->input('fecha_devolucion'),
             ]);
@@ -274,7 +267,7 @@ class PrestamoController extends Controller
             // Eliminar la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/singles/{$id}");
+            ])->delete("https://1826-187-190-56-49.ngrok-free.app/singles/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {

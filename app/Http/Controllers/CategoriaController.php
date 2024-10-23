@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Categoria;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use App\Models\Token;
+use Illuminate\Support\Facades\Validator;
 use Faker\Factory as Faker;
 
 class CategoriaController extends Controller
@@ -25,7 +27,7 @@ class CategoriaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/canciones');
 
             // Devolver la respuesta con los categorias y los datos de la API externa
             return response()->json([
@@ -61,7 +63,7 @@ class CategoriaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/canciones/' . $id);
 
             return response()->json([
                 'msg' => 'Categoria encontrada',
@@ -108,12 +110,12 @@ class CategoriaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/canciones', [
                         'nombre' => $faker->name, // Usar nombre del request
-                        'duracion' => $faker->randomNumber(60, 300), // Usar número aleatorio del request
-                        'artista_id' => 1, // Usar número aleatorio del request
-                        'genero_id' => 1, // Usar número aleatorio del request
-                        'album_id' => 1, // Usar número aleatorio del request
+                        'duracion' => $faker->randomNumber(1, 10), // Usar número aleatorio del request
+                        'artista_id' => $request->input('id'), // Usar número aleatorio del request
+                        'genero_id' => $request->input('id'), // Usar número aleatorio del request
+                        'album_id' => $request->input('id'), // Usar número aleatorio del request
                     ]);
 
             // Manejo de error de la respuesta de la API
@@ -183,12 +185,12 @@ class CategoriaController extends Controller
 
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones', [
-                        'nombre' => $faker->name, // Usar nombre del request
-                        'duracion' => $faker->randomNumber(60, 300), // Usar número aleatorio del request
-                        'artista_id' => 1, // Usar número aleatorio del request
-                        'genero_id' => 1, // Usar número aleatorio del request
-                        'album_id' => 1, // Usar número aleatorio del request
+            ])->put('https://1826-187-190-56-49.ngrok-free.app/canciones/'.$id , [
+                    'nombre' => $faker->name, // Usar nombre del request
+                    'duracion' => $faker->randomNumber(1, 10), // Usar número aleatorio del request
+                    'artista_id' => $request->input('id'), // Usar número aleatorio del request
+                    'genero_id' => $request->input('id'), // Usar número aleatorio del request
+                    'album_id' => $request->input('id'),  // Usar número aleatorio del request
                     ]);
 
             // Manejo de error de la respuesta de la API
@@ -243,7 +245,7 @@ class CategoriaController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/canciones/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

@@ -31,7 +31,7 @@ class LibroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/albums');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/albums');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -79,7 +79,7 @@ class LibroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/albums/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/albums/' . $id);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -123,7 +123,7 @@ class LibroController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'titulo' => 'string|required',
-                'editorial_id' => 'string|required',
+                'editorial_id' => 'integer|required',
             ]);
 
             if ($validate->fails()) {
@@ -134,10 +134,10 @@ class LibroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/albums', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/albums', [
                 'nombre' => $faker->sentence,
                 'fecha_lanzamiento' => $faker->date,
-                'artista_id' => 1,
+                'artista_id' => $request->input('editorial_id'),
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -148,7 +148,7 @@ class LibroController extends Controller
             // Crear el libro localmente
             $libro = Libro::create([
                 'titulo' => $request->input('titulo'),
-                'autor' => $request->input('autor'),
+                'editorial_id' => $request->input('editorial_id'),
             ]);
 
             return response()->json([
@@ -181,8 +181,8 @@ class LibroController extends Controller
 
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
-                'titulo' => 'string|required',
-                'editorial_id' => 'string|required',
+                'titulo' => 'string|max:128|required',
+                'editorial_id' => 'integer|required',
             ]);
 
             if ($validate->fails()) {
@@ -200,11 +200,11 @@ class LibroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/albums/' . $id, [
+            ])->put('https://1826-187-190-56-49.ngrok-free.app/albums/' . $id, [
 
                 'nombre' => $faker->sentence,
                 'fecha_lanzamiento' => $faker->date,
-                'artista_id' => 1,
+                'artista_id' => $request->input('editorial_id'),
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -215,7 +215,7 @@ class LibroController extends Controller
             // Actualizar el libro localmente
             $libro->update([
                 'titulo' => $request->input('titulo'),
-                'autor' => $request->input('autor'),
+                'editorial_id' => $request->input('editorial_id'),
             ]);
 
             return response()->json([
@@ -256,7 +256,7 @@ class LibroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/albums/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/albums/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

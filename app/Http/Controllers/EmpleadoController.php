@@ -27,7 +27,9 @@ class EmpleadoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app
+
+/playlistsCanciones');
 
             // Devolver la respuesta con los empleadoes y los datos de la API externa
             return response()->json([
@@ -65,7 +67,9 @@ class EmpleadoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/{$id}");
+            ])->get("https://1826-187-190-56-49.ngrok-free.app
+
+/playlistsCanciones/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -120,7 +124,9 @@ class EmpleadoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones', [
+            ])->post('https://1826-187-190-56-49.ngrok-free.app
+
+/playlistsCanciones', [
                   'playlist_id' => 1,
                   'cancion_id' => 1,
                                // Usar país del request
@@ -195,7 +201,9 @@ class EmpleadoController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/' . $id, [
+            ])->put('https://1826-187-190-56-49.ngrok-free.app
+
+/playlistsCanciones/' . $id, [
                 'playlist_id' => 1,
                 'cancion_id' => 1,
             ]);
@@ -253,7 +261,9 @@ class EmpleadoController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app
+
+/playlistsCanciones/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

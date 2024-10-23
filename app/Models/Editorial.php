@@ -10,7 +10,7 @@ class Editorial extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'editorials'; // Especificas 'editorials'
+    protected $table = 'editoriales'; // Especificas 'editorials'
     protected $fillable = ['nombre', 'pais'];
 
     public function libros()

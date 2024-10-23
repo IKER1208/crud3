@@ -11,7 +11,7 @@ class Libro extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'libros'; // Nombre de la tabla si es diferente al plural del modelo
-    protected $fillable = ['titulo', 'autor_id', 'editorial_id', 'categoria_id', 'genero_id', 'anio_publicacion'];
+    protected $fillable = ['titulo', 'autor_id', 'editorial_id', 'categoria_id', 'genero_id'];
 
     // Relación con Autor (Muchos a Uno)
     public function autor()

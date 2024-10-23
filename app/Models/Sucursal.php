@@ -11,7 +11,7 @@ class Sucursal extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'sucursals';
+    protected $table = 'sucursales';
     protected $fillable = ['nombre', 'direccion'];
 
     // Relación con Empleados (Uno a Muchos)

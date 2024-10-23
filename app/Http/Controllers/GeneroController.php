@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Genero;
+use App\Models\Token;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Faker\Factory as Faker;
@@ -26,7 +27,7 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/comentarios');
 
             // Devolver la respuesta con los generoes y los datos de la API externa
             return response()->json([
@@ -61,7 +62,7 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/comentarios/' . $id);
 
             return response()->json([
                 'msg' => 'Genero encontrado',
@@ -109,10 +110,11 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios', [
-                        'user_id' => 1, // Usar nombre del request
-                        'album_id' => 1, // Usar país del request
-                    ]);
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/comentarios', [
+                'comentario' => $faker->sentence(),
+                'user_id' => $request->input('id'), // Usar nombre del request
+                'album_id' => $request->input('id'),  // Usar país del request
+            ]);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -181,9 +183,10 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios', [
-                        'user_id' => 1, // Usar nombre del request
-                        'album_id' => 1, // Usar país del request
+            ])->put('https://1826-187-190-56-49.ngrok-free.app/comentarios/' . $id, [
+                        'comentario' => $faker->sentence(),
+                        'user_id' => $request->input('id'), // Usar nombre del request
+                        'album_id' => $request->input('id'), // Usar país del request
                     ]);
 
             // Manejo de error de la respuesta de la API
@@ -238,7 +241,9 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app
+
+/comentarios/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
