@@ -105,6 +105,15 @@ class IdiomaController extends Controller
                 return response()->json(['error' => 'Token no encontrado'], 401);
             }
 
+            $token_noe = $token_noe_record->token_2;
+
+            $faker = Faker::create();
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|required',
+            ]);
+
             $resenaData = [
                 'resena' => $faker->text(200),
                 'fecha' => $faker->date,
@@ -148,7 +157,7 @@ class IdiomaController extends Controller
             return response()->json([
                 'msg' => 'Idioma creado con éxito',
                 'idioma' => $idioma,
-                'data' => $resena,
+                'data' => $dataResponse->json(),
                 'resenaData' => $resenaData
             ], 201);
 
