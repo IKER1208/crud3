@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Autor;
+use App\Models\Empleado;
 use App\Models\Token;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Validator;
 
-class AutorController extends Controller
+class EmpleadoController extends Controller
 {
     public function index(Request $request)
     {
@@ -29,14 +29,7 @@ class AutorController extends Controller
                 'Authorization' => "Bearer {$token_noe}"
             ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones');
 
-            // Verificar si la respuesta de la API falló
-            if ($dataResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400);
-            }
-
-            // Devolver la respuesta con los autores y los albums
+            // Devolver la respuesta con los empleadoes y los datos de la API externa
             return response()->json([
                 'msg' => 'Autores y albums encontrados',
                 'autores' => $empleadoes,
@@ -159,6 +152,7 @@ class AutorController extends Controller
         }
     }
 
+
     public function update(Request $request, $id)
     {
         try {
@@ -193,9 +187,11 @@ class AutorController extends Controller
 
             if (!$empleado) {
                 return response()->json([
-                    'msg' => 'Autor no encontrado'
+                    'msg' => 'Empleado no encontrado'
                 ], 404);
             }
+
+            $faker = Faker::create();
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
@@ -269,7 +265,9 @@ class AutorController extends Controller
             // Eliminar el autor localmente
             $empleado->delete();
 
-            return response()->json(['msg' => 'Autor eliminado con éxito'], 200);
+            return response()->json([
+                'msg' => "Empleado y datos de la API externa eliminados con éxito"
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
