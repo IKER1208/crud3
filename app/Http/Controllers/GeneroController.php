@@ -241,9 +241,7 @@ class GeneroController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://1826-187-190-56-49.ngrok-free.app
-
-/comentarios/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/comentarios/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\Models\Idioma;
+use App\Models\Token;
+use Illuminate\Support\Facades\Validator;
 use Faker\Factory as Faker;
 
 class IdiomaController extends Controller
@@ -25,9 +27,7 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://1826-187-190-56-49.ngrok-free.app
-
-/resenas');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/resenas');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -69,9 +69,7 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://1826-187-190-56-49.ngrok-free.app
-
-/resenas/' . $id);
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/resenas/' . $id);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -122,34 +120,20 @@ class IdiomaController extends Controller
                 'resena' => $faker->text(200),
                 'fecha' => $faker->date,
                 'calificacion' => $faker->numberBetween(1, 10),
-                'user_id' => 1,
-                'cancion_id' => 1
+                'user_id' => $request->input('id'),
+                'cancion_id' => $request->input('id'),
             ];
-
+            $faker = Faker::create();
             // Crear la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post("https://1826-187-190-56-49.ngrok-free.app
-
-/resenas/", $resenaData);
+            ])->post("https://1826-187-190-56-49.ngrok-free.app/resenas/", $resenaData);
 
             if ($validate->fails()) {
                 return response()->json([
                     'error' => $validate->errors()
                 ], 400);
             }
-
-            $faker = Faker::create();
-            // Hacer la petición a la API externa utilizando el token proporcionado
-            $dataResponse = Http::withHeaders([
-                'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://1826-187-190-56-49.ngrok-free.app
-
-/resenas', [
-                        'user_id' => 1, // Usar nombre del request
-                        'cancion_id' => 1, // Usar país del request
-                    ]);
-
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
                 return response()->json([
@@ -219,8 +203,8 @@ class IdiomaController extends Controller
                 'resena' => $faker->text(200),
                 'fecha' => $faker->date,
                 'calificacion' => $faker->numberBetween(1, 10),
-                'user_id' => 1,
-                'cancion_id' => 1
+                'user_id' => $request->input('id'),
+                'cancion_id' => $request->input('id'),
             ];
 
             // Actualizar la playlist en la API externa
@@ -280,9 +264,7 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete("https://1826-187-190-56-49.ngrok-free.app
-
-/resenas/{$id}");
+            ])->delete("https://1826-187-190-56-49.ngrok-free.app/resenas/{$id}");
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
