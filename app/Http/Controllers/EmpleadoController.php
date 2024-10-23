@@ -22,12 +22,12 @@ class AutorController extends Controller
 
         try {
             // Obtener todos los autores de la base de datos local
-            $autores = Autor::all();
+            $empleadoes = Autor::all();
 
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists');
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -39,8 +39,8 @@ class AutorController extends Controller
             // Devolver la respuesta con los autores y los albums
             return response()->json([
                 'msg' => 'Autores y albums encontrados',
-                'autores' => $autores,
-                'albums' => $dataResponse->json()
+                'autores' => $empleadoes,
+                'playcan' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
@@ -60,10 +60,10 @@ class AutorController extends Controller
 
         try {
             // Buscar al autor por ID
-            $autor = Autor::find($id);
+            $empleado = Autor::find($id);
 
             // Verificar si el autor existe
-            if (!$autor) {
+            if (!$empleado) {
                 return response()->json([
                     'msg' => 'No se encontró el autor'
                 ], 404); // Código 404 para "No encontrado"
@@ -72,7 +72,7 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlists/{$id}");
+            ])->get("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -83,7 +83,7 @@ class AutorController extends Controller
 
             return response()->json([
                 'msg' => 'Autor encontrado',
-                'autor' => $autor,
+                'autor' => $empleado,
                 'data' => $dataResponse->json()
             ], 200);
 
@@ -114,7 +114,7 @@ class AutorController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'nombre' => 'string|required',
-                'pais' => 'string|required',
+                'sucursal_id' => 'integer|required',
             ]);
 
             if ($validate->fails()) {
@@ -127,9 +127,10 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas', [
-                'nombre' => $request->input('nombre'), // Usar nombre del request
-                'nacionalidad' => $request->input('pais'), // Usar país del request
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones', [
+                  'playlist_id' => 1,
+                  'cancion_id' => 1,
+                               // Usar país del request
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -140,14 +141,14 @@ class AutorController extends Controller
             }
 
             // Crear el autor localmente
-            $autor = Autor::create([
+            $empleado = Autor::create([
                 'nombre' => $request->input('nombre'),
-                'pais' => $request->input('pais'),
+                'sucursal_id' => $request->input('sucursal_id'),
             ]);
 
             return response()->json([
                 'msg' => 'Autor creado con éxito',
-                'autor' => $autor,
+                'autor' => $empleado,
                 'data' => $dataResponse->json()
             ], 201);
 
@@ -178,7 +179,7 @@ class AutorController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'nombre' => 'string|max:128|required',
-                'pais' => 'string|max:64|required',
+                'sucursal_id' => 'integer|required',
             ]);
 
             if ($validate->fails()) {
@@ -188,9 +189,9 @@ class AutorController extends Controller
             }
 
             // Buscar el autor a actualizar
-            $autor = Autor::find($id);
+            $empleado = Autor::find($id);
 
-            if (!$autor) {
+            if (!$empleado) {
                 return response()->json([
                     'msg' => 'Autor no encontrado'
                 ], 404);
@@ -198,10 +199,9 @@ class AutorController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas/' . $id, [
-                'nombre' => $faker->firstName,
-                'descripcion' => $faker->sentence,
-                'user_id' => 1,
+            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/' . $id, [
+                'playlist_id' => 1,
+                'cancion_id' => 1,
             ]);
 
             // Manejo de error de la respuesta de la API
@@ -212,14 +212,14 @@ class AutorController extends Controller
             }
 
             // Actualizar el autor localmente
-            $autor->update([
+            $empleado->update([
                 'nombre' => $request->input('nombre'),
-                'pais' => $request->input('pais'),
+                'sucursal_id' => $request->input('sucursal_id'),
             ]);
 
             return response()->json([
                 'msg' => 'Autor actualizado con éxito',
-                'autor' => $autor,
+                'emplado' => $empleado,
                 'data' => $dataResponse->json()
             ], 200);
 
@@ -248,16 +248,16 @@ class AutorController extends Controller
             $token_noe = $token_noe_record->token_2;
 
             // Buscar el autor a eliminar
-            $autor = Autor::find($id);
+            $empleado = Autor::find($id);
 
-            if (!$autor) {
+            if (!$empleado) {
                 return response()->json(['msg' => "Autor no encontrado"], 404);
             }
 
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/artistas/' . $id);
+            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -267,7 +267,7 @@ class AutorController extends Controller
             }
 
             // Eliminar el autor localmente
-            $autor->delete();
+            $empleado->delete();
 
             return response()->json(['msg' => 'Autor eliminado con éxito'], 200);
 

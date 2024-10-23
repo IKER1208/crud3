@@ -142,7 +142,6 @@ class ClienteController extends Controller
                 'nombre' => $faker->name, // Usar nombre del request
                 'telefono' => $faker->phoneNumber,
                 'direccion' => $faker->address,
-                 // Usar país del request
             ]);
 
             // Manejo de error de la respuesta de la API

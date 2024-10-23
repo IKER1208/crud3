@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Libro;
+use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
@@ -122,7 +123,7 @@ class LibroController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'titulo' => 'string|required',
-                'autor' => 'string|required',
+                'editorial_id' => 'string|required',
             ]);
 
             if ($validate->fails()) {
@@ -180,8 +181,8 @@ class LibroController extends Controller
 
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
-                'titulo' => 'string|max:128|required',
-                'autor' => 'string|max:64|required',
+                'titulo' => 'string|required',
+                'editorial_id' => 'string|required',
             ]);
 
             if ($validate->fails()) {

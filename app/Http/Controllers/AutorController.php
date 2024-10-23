@@ -114,7 +114,7 @@ class AutorController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'nombre' => 'string|required',
-                'pais' => 'string|required',
+                'bio' => 'string|required',
             ]);
 
             if ($validate->fails()) {
@@ -179,7 +179,7 @@ class AutorController extends Controller
             // Validación de los datos recibidos
             $validate = Validator::make($request->all(), [
                 'nombre' => 'string|max:128|required',
-                'pais' => 'string|max:64|required',
+                'bio' => 'string|required',
             ]);
 
             if ($validate->fails()) {

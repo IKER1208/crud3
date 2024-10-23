@@ -29,7 +29,7 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones');
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas');
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -73,7 +73,7 @@ class IdiomaController extends Controller
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/' . $id);
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/' . $id);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -115,15 +115,18 @@ class IdiomaController extends Controller
                 ], 401);
             }
 
-            $playlistcData = [
-                'playlist_id' =>1,
-                'cancion_id' => 1,
+            $resenaData = [
+                'resena' => $faker->text(200),
+                'fecha' => $faker->date,
+                'calificacion' => $faker->numberBetween(1, 10),
+                'user_id' => 1,
+                'cancion_id' => 1
             ];
 
             // Crear la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/", $playlistcData);
+            ])->post("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/", $resenaData);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -140,7 +143,7 @@ class IdiomaController extends Controller
                 'msg' => 'Idioma creado',
                 'idioma' => $idioma,
                 'data' => $resena,
-                'playlistcData' => $playlistcData
+                'resenaData' => $resenaData
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -176,15 +179,18 @@ class IdiomaController extends Controller
             $idioma->save();
 
             $faker = Faker::create();
-            $playlistcData = [
-                'playlist_id' => 1,
-                'cancion_id' => 1,
+            $resenaData = [
+                'resena' => $faker->text(200),
+                'fecha' => $faker->date,
+                'calificacion' => $faker->numberBetween(1, 10),
+                'user_id' => 1,
+                'cancion_id' => 1
             ];
 
             // Actualizar la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/" . $id, $playlistcData);
+            ])->put("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/" . $id, $resenaData);
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -230,7 +236,7 @@ class IdiomaController extends Controller
             // Eliminar la playlist en la API externa
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/playlistsCanciones/{$id}");
+            ])->delete("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
