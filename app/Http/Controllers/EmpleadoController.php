@@ -7,7 +7,6 @@ use App\Models\Empleado;
 use App\Models\Token;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
-use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Validator;
 
 class EmpleadoController extends Controller
@@ -21,20 +20,18 @@ class EmpleadoController extends Controller
         $token_noe = $token_noe->token_2;
 
         try {
-            // Obtener todos los autores de la base de datos local
-            $empleadoes = Autor::all();
+            // Obtener todos los empleadoes de la base de datos local
+            $empleadoes = Empleado::all();
 
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://1826-187-190-56-49.ngrok-free.app
-
-/playlistsCanciones');
+            ])->get('https://1826-187-190-56-49.ngrok-free.app/playlistsCanciones');
 
             // Devolver la respuesta con los empleadoes y los datos de la API externa
             return response()->json([
-                'msg' => 'Autores y albums encontrados',
-                'autores' => $empleadoes,
+                'msg' => 'Empleados y albums encontrados',
+                'empleadoes' => $empleadoes,
                 'playcan' => $dataResponse->json()
             ], 200);
 
@@ -54,22 +51,20 @@ class EmpleadoController extends Controller
         $token_noe = $token_noe->token_2;
 
         try {
-            // Buscar al autor por ID
-            $empleado = Autor::find($id);
+            // Buscar al empleado por ID
+            $empleado = Empleado::find($id);
 
-            // Verificar si el autor existe
+            // Verificar si el empleado existe
             if (!$empleado) {
                 return response()->json([
-                    'msg' => 'No se encontró el autor'
+                    'msg' => 'No se encontró el empleado'
                 ], 404); // Código 404 para "No encontrado"
             }
 
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get("https://1826-187-190-56-49.ngrok-free.app
-
-/playlistsCanciones/{$id}");
+            ])->get("https://1826-187-190-56-49.ngrok-free.app/playlistsCanciones/{$id}");
 
             // Verificar si la respuesta de la API falló
             if ($dataResponse->failed()) {
@@ -79,8 +74,8 @@ class EmpleadoController extends Controller
             }
 
             return response()->json([
-                'msg' => 'Autor encontrado',
-                'autor' => $empleado,
+                'msg' => 'Empleado encontrado',
+                'empleado' => $empleado,
                 'data' => $dataResponse->json()
             ], 200);
 
@@ -120,17 +115,14 @@ class EmpleadoController extends Controller
                 ], 400);
             }
 
-            $faker = Faker::create();
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->post('https://1826-187-190-56-49.ngrok-free.app
-
-/playlistsCanciones', [
-                  'playlist_id' => 1,
-                  'cancion_id' => 1,
-                               // Usar país del request
-            ]);
+            ])->post('https://1826-187-190-56-49.ngrok-free.app/playlistsCanciones', [
+                        'playlist_id' => $request->input('id'),
+                        'cancion_id' => $request->input('id'),
+                        // Usar país del request
+                    ]);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -139,15 +131,15 @@ class EmpleadoController extends Controller
                 ], $dataResponse->status());
             }
 
-            // Crear el autor localmente
-            $empleado = Autor::create([
+            // Crear el empleado localmente
+            $empleado = Empleado::create([
                 'nombre' => $request->input('nombre'),
                 'sucursal_id' => $request->input('sucursal_id'),
             ]);
 
             return response()->json([
-                'msg' => 'Autor creado con éxito',
-                'autor' => $empleado,
+                'msg' => 'Empleado creado con éxito',
+                'empleado' => $empleado,
                 'data' => $dataResponse->json()
             ], 201);
 
@@ -188,8 +180,8 @@ class EmpleadoController extends Controller
                 ], 400);
             }
 
-            // Buscar el autor a actualizar
-            $empleado = Autor::find($id);
+            // Buscar el empleado a actualizar
+            $empleado = empleado::find($id);
 
             if (!$empleado) {
                 return response()->json([
@@ -197,16 +189,13 @@ class EmpleadoController extends Controller
                 ], 404);
             }
 
-            $faker = Faker::create();
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->put('https://1826-187-190-56-49.ngrok-free.app
-
-/playlistsCanciones/' . $id, [
-                'playlist_id' => 1,
-                'cancion_id' => 1,
-            ]);
+            ])->put('https://1826-187-190-56-49.ngrok-free.app/playlistsCanciones/' . $id, [
+                        'playlist_id' => $request->input('id'),
+                        'cancion_id' => $request->input('id'),
+                    ]);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -215,14 +204,14 @@ class EmpleadoController extends Controller
                 ], $dataResponse->status());
             }
 
-            // Actualizar el autor localmente
+            // Actualizar el empleado localmente
             $empleado->update([
                 'nombre' => $request->input('nombre'),
                 'sucursal_id' => $request->input('sucursal_id'),
             ]);
 
             return response()->json([
-                'msg' => 'Autor actualizado con éxito',
+                'msg' => 'Empleado actualizado con éxito',
                 'emplado' => $empleado,
                 'data' => $dataResponse->json()
             ], 200);
@@ -251,19 +240,17 @@ class EmpleadoController extends Controller
 
             $token_noe = $token_noe_record->token_2;
 
-            // Buscar el autor a eliminar
-            $empleado = Autor::find($id);
+            // Buscar el empleado a eliminar
+            $empleado = Empleado::find($id);
 
             if (!$empleado) {
-                return response()->json(['msg' => "Autor no encontrado"], 404);
+                return response()->json(['msg' => "empleado no encontrado"], 404);
             }
 
             // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->delete('https://1826-187-190-56-49.ngrok-free.app
-
-/playlistsCanciones/' . $id);
+            ])->delete('https://1826-187-190-56-49.ngrok-free.app/playlistsCanciones/' . $id);
 
             // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
@@ -272,7 +259,7 @@ class EmpleadoController extends Controller
                 ], $dataResponse->status());
             }
 
-            // Eliminar el autor localmente
+            // Eliminar el empleado localmente
             $empleado->delete();
 
             return response()->json([
