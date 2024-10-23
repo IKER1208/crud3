@@ -13,144 +13,125 @@ class GeneroController extends Controller
 {
     public function index(Request $request)
     {
-       // Extraer el token desde el encabezado 'token_noe'
-        $token_noe = request()->header('token_noe');
+        $token_iker = $request->header('Authorization');
 
-    // Validar si el token fue proporcionado
-        if (!$token_noe) {
-        return response()->json([
-            'error' => 'Token no proporcionado'
-        ], 401); // Devuelve error 401 si el token no fue proporcionado
-        }
+        // Buscar el token correspondiente
+        $token_noe = Token::where('token_1', $token_iker)->first();
+        $token_noe = $token_noe->token_2;
 
         try {
-            // Obtener los datos de los libros desde la base de datos
-            $genero = Genero::all();
+            // Obtener todos los generoes de la base de datos local
+            $generos = Genero::all();
 
             // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
                 'Authorization' => "Bearer {$token_noe}"
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas');
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios');
 
-            // Verificar si la respuesta de la API falló
-            if ($dataResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400);
-            }
-
-            // Devolver la respuesta con los libros locales y los artistas de la API externa
+            // Devolver la respuesta con los generoes y los datos de la API externa
             return response()->json([
                 'msg' => 'generos encontrados',
-                'generos' => $genero,
-                'resenas' => $dataResponse->json()
+                'generos' => $generos,
+                'data' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
-            // Manejo de excepciones en caso de error al comunicarse con la API externa
             return response()->json([
                 'error' => 'Error al comunicarse con la API externa'
             ], 500);
         }
     }
-    
-
     public function show($id, Request $request)
-{
-    // Extraer el token desde el encabezado 'token_noe'
-    $token_noe = $request->header('token_noe');
+    {
+        try {
+            $genero = genero::find($id);
 
-    // Validar si el token fue proporcionado
-    if (!$token_noe) {
-        return response()->json([
-            'error' => 'Token no proporcionado'
-        ], 401);
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token correspondiente
+            $token_noe = Token::where('token_1', $token_iker)->first();
+            $token_noe = $token_noe->token_2;
+
+            if (!$genero) {
+                return response()->json([
+                    'msg' => 'No se encontró el genero'
+                ], 404);
+            }
+
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios/' . $id);
+
+            return response()->json([
+                'msg' => 'Genero encontrado',
+                'genero' => $genero,
+                'data' => $dataResponse->json()
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al comunicarse con la API externa'
+            ], 500);
+        }
     }
 
-    try {
-        $genero = Genero::find($id);
-
-        // Validar si se encontró el género
-        if (!$genero) {
-            return response()->json([
-                'error' => 'Género no encontrado'
-            ], 404); // Devuelve error 404 si el género no fue encontrado
-        }
-
-        // Hacer la petición a la API externa utilizando el token proporcionado
-        $dataResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token_noe
-        ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/' . $id);
-
-        // Verificar si la respuesta de la API falló
-        if ($dataResponse->failed()) {
-            return response()->json([
-                'error' => 'Error al obtener datos de la API externa'
-            ], $dataResponse->status());
-        }
-
-        // Devolver la respuesta con el género local y los artistas de la API externa
-        return response()->json([
-            'msg' => 'Género encontrado',
-            'genero' => $genero,
-            'resenas' => $dataResponse->json()
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Manejo de excepciones en caso de error al comunicarse con la API externa
-        return response()->json([
-            'error' => 'Error al comunicarse con la API externa'
-        ], 500);
-    }
-}
 
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'nombre' => 'required|string|max:255',
-            ]);
-    
-            $faker = Faker::create();
-    
-            $genero = new Genero();
-            $genero->nombre = $request->input('nombre'); 
-            $genero->save();
+            $token_iker = $request->header('Authorization');
 
-            $token_noe = $request->header('token_noe');
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
 
-            if (!$token_noe) {
-                return response()->json([
-                    'error' => 'Token no proporcionado'
-                ], 401);
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
             }
-            $resenadata = [
-                'resena'=>$faker->sentence,
-                'fecha'=>$faker->date,
-                'calificacion'=>$faker ->numberBetween(1, 10),
-                'user_id'=>1,
-                'cancion_id'=>1,
-            ];
-    
-            $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe // Usar el token obtenido del header 'token_noe'
-            ])->post("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas", $resenadata);
-        
-            if ($dataResponse->failed()) {
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|required',
+            ]);
+
+            if ($validate->fails()) {
                 return response()->json([
-                    'error' => 'Error al crear la resena en la API externa',
-                    'details' => $dataResponse->json() 
+                    'error' => $validate->errors()
                 ], 400);
             }
-    
-            $resena = $dataResponse->json();
-            \Log::info('Respuesta de la API externa:', $resena);
-    
+
+            $faker = Faker::create();
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios', [
+                        'user_id' => 1, // Usar nombre del request
+                        'album_id' => 1, // Usar país del request
+                    ]);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Crear la genero localmente
+            $genero = Genero::create([
+                'nombre' => $request->input('nombre'),
+            ]);
+
             return response()->json([
-                'msg' => 'género creado',
+                'msg' => 'Genero creado con éxito',
                 'genero' => $genero,
-                'data' => $resena 
+                'data' => $dataResponse->json()
             ], 201);
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
@@ -158,118 +139,125 @@ class GeneroController extends Controller
         }
     }
 
+
     public function update(Request $request, $id)
-{
-    try {
-        // Paso 1: Validar la solicitud
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-        ]);
-
-        // Paso 2: Encontrar el libro por su ID
-        $genero = Genero::find($id);
-
-        if (!$genero) {
-            return response()->json([
-                'error' => 'Libro no encontrado'
-            ], 404);
-        }
-
-        // Paso 3: Actualizar los datos del libro
-        $genero->nombre = $request->input('nombre');
-        $genero->save();
-
-        // Paso 4: Obtener el token desde el header 'token_noe'
-        $token_noe = $request->header('token_noe');
-
-        if (!$token_noe) {
-            return response()->json([
-                'error' => 'Token no proporcionado'
-            ], 401);
-        }
-        $faker = Faker::create();
-        // Paso 5: Preparar los datos para la API externa
-        $generoData = [
-        'resena'=>$faker->word,
-        'fecha'=>$faker->date,
-        'calificacion'=>$faker ->numberBetween(1, 10),
-        'user_id'=>$faker ->numberBetween(50, 100),
-        'cancion_id'=>$faker ->numberBetween(50,100),       
-        ];
-
-        // Paso 6: Actualizar el artista en la API externa
-        $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-        ])->put("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/". $id , $generoData);
-
-        // Verificar si la respuesta de la API falló
-        if ($dataResponse->failed()) {
-            return response()->json([
-                'error' => 'Error al actualizar el artista en la API externa',
-                'details' => $dataResponse->json()
-            ], 400);
-        }
-
-        // Devolver la respuesta confirmando la actualización
-        return response()->json([
-            'msg' => 'Libro y artista actualizados con éxito',
-            'genero' => $genero,
-            'artista' => $dataResponse->json()
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
-        ], 500);
-    }
-}
-
-    public function destroy(Request $request, $id)
     {
-    try {
-        // Paso 1: Encontrar el libro por su ID
-        $genero = Genero::find($id);
+        try {
+            $token_iker = $request->header('Authorization');
 
-        if (!$genero) {
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|max:128|required',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'error' => $validate->errors()
+                ], 400);
+            }
+
+            // Buscar la genero a actualizar
+            $genero = Genero::find($id);
+
+            if (!$genero) {
+                return response()->json([
+                    'msg' => 'Genero no encontrado',
+                ], 404);
+            }
+
+            $faker = Faker::create();
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios', [
+                        'user_id' => 1, // Usar nombre del request
+                        'album_id' => 1, // Usar país del request
+                    ]);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Actualizar la genero localmente
+            $genero->update([
+                'nombre' => $request->input('nombre'),
+            ]);
+
             return response()->json([
-                'error' => 'Libro no encontrado'
-            ], 404);
-        }
+                'msg' => 'Genero actualizado con éxito',
+                'genero' => $genero,
+                'data' => $dataResponse->json()
+            ], 200);
 
-        // Paso 2: Obtener el token desde el header 'token_noe'
-        $token_noe = $request->header('token_noe');
-
-        if (!$token_noe) {
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Token no proporcionado'
-            ], 401);
+                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Paso 3: Eliminar el libro localmente
-        $genero->delete();
-
-        // Paso 4: Eliminar el artista en la API externa
-        $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-        ])->delete("https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/resenas/{$id}");
-
-        // Verificar si la respuesta de la API falló
-        if ($dataResponse->failed()) {
-            return response()->json([
-                'error' => 'Error al eliminar el resena en la API externa',
-                'details' => $dataResponse->json()
-            ], 400);
-        }
-
-        // Devolver la respuesta confirmando la eliminación
-        return response()->json([
-            'msg' => 'genero y resena eliminados con éxito'
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
-        ], 500);
     }
-}
+
+    public function destroy($id, Request $request)
+    {
+        try {
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Buscar la genero a eliminar
+            $genero = Genero::find($id);
+
+            if (!$genero) {
+                return response()->json(['msg' => "Genero no encontrado"], 404);
+            }
+
+            // Hacer la petición a la API externa para eliminar los datos correspondientes
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/comentarios/' . $id);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Eliminar la genero localmente
+            $genero->delete();
+
+            return response()->json([
+                'msg' => "genero y datos de la API externa eliminados con éxito"
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
