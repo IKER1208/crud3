@@ -14,84 +14,64 @@ class CategoriaController extends Controller
     {
         $token_iker = $request->header('Authorization');
 
+        // Buscar el token correspondiente
         $token_noe = Token::where('token_1', $token_iker)->first();
         $token_noe = $token_noe->token_2;
 
-        return response()->json([
-            $token_noe
-        ]);
-
-
-        if (!$token_noe) {
-            return response()->json([
-                'error' => 'Token no proporcionado'
-            ], 401);
-        }
-
         try {
+            // Obtener todos los categorias de la base de datos local
             $categorias = Categoria::all();
 
+            // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias');
+                'Authorization' => "Bearer {$token_noe}"
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones');
 
-            if ($dataResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400);
-            }
-
+            // Devolver la respuesta con los categorias y los datos de la API externa
             return response()->json([
-                'msg' => 'Categorías encontradas',
+                'msg' => 'categorias encontradas',
                 'categorias' => $categorias,
-                'discografias' => $dataResponse->json()
+                'data' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+                'error' => 'Error al comunicarse con la API externa'
             ], 500);
         }
     }
 
     public function show($id, Request $request)
     {
-        $categoria = Categoria::find($id);
-
-        if (!$categoria) {
-            return response()->json([
-                'error' => 'No se encontró la categoría'
-            ], 404);
-        }
-
-        $token_noe = $request->header('token_noe');
-
-        if (!$token_noe) {
-            return response()->json([
-                'error' => 'Token no proporcionado'
-            ], 401);
-        }
-
         try {
-            $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias/' . $id);
+            $categoria = Categoria::find($id);
 
-            if ($dataResponse->failed()) {
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token correspondiente
+            $token_noe = Token::where('token_1', $token_iker)->first();
+            $token_noe = $token_noe->token_2;
+
+            if (!$categoria) {
                 return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400);
+                    'msg' => 'No se encontró la categoría'
+                ], 404);
             }
 
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones/' . $id);
+
             return response()->json([
-                'msg' => 'Categoría encontrada',
+                'msg' => 'Categoria encontrada',
                 'categoria' => $categoria,
-                'discografia' => $dataResponse->json()
+                'data' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+                'error' => 'Error al comunicarse con la API externa'
             ], 500);
         }
     }
@@ -99,47 +79,59 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'nombre' => 'required|string|max:255',
-            ]);
+            $token_iker = $request->header('Authorization');
 
-            // Crear una instancia de Faker
-            $faker = Faker::create();
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
 
-            // Generar datos ficticios
-            $discoData = [
-                'nombre' => $faker->name,
-                'telefono' => $faker->phoneNumber,
-                'direccion' => $faker->address
-            ];
-
-            $categoria = new Categoria();
-            $categoria->nombre = $request->input('nombre'); 
-            $categoria->save();
-
-            $token_noe = $request->header('token_noe');
-
-            if (!$token_noe) {
-                return response()->json([
-                    'error' => 'Token no proporcionado'
-                ], 401);
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
             }
 
-            $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias', $discoData);
+            $token_noe = $token_noe_record->token_2;
 
-            if ($dataResponse->failed()) {
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|required',
+            ]);
+
+            if ($validate->fails()) {
                 return response()->json([
-                    'error' => 'Error al crear la categoría en la API externa',
-                    'details' => $dataResponse->json()
+                    'error' => $validate->errors()
                 ], 400);
             }
 
+            $faker = Faker::create();
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones', [
+                        'nombre' => $faker->name, // Usar nombre del request
+                        'duracion' => $faker->randomNumber(60, 300), // Usar número aleatorio del request
+                        'artista_id' => 1, // Usar número aleatorio del request
+                        'genero_id' => 1, // Usar número aleatorio del request
+                        'album_id' => 1, // Usar número aleatorio del request
+                    ]);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Crear la categoria localmente
+            $categoria = Categoria::create([
+                'nombre' => $request->input('nombre'),
+            ]);
+
             return response()->json([
-                'msg' => 'Categoría creada con éxito',
+                'msg' => 'Categoria creada con éxito',
                 'categoria' => $categoria,
-                'discografia' => $dataResponse->json()
+                'data' => $dataResponse->json()
             ], 201);
 
         } catch (\Exception $e) {
@@ -152,54 +144,69 @@ class CategoriaController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $request->validate([
-                'nombre' => 'required|string|max:255',
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|max:128|required',
             ]);
 
+            if ($validate->fails()) {
+                return response()->json([
+                    'error' => $validate->errors()
+                ], 400);
+            }
+
+            // Buscar la editorial a actualizar
             $categoria = Categoria::find($id);
 
             if (!$categoria) {
                 return response()->json([
-                    'error' => 'Categoría no encontrada'
+                    'msg' => 'Categoria no encontrada'
                 ], 404);
             }
 
-            // Crear una instancia de Faker
             $faker = Faker::create();
-
-            // Generar datos ficticios
-            $discoData = [
-                'nombre' =>  $faker->name,
-                'telefono' => $faker->phoneNumber,
-                'direccion' => $faker->address
-            ];
-
-            $categoria->nombre = $discoData['nombre'];
-            $categoria->save();
-
-            $token_noe = $request->header('token_noe');
-
-            if (!$token_noe) {
-                return response()->json([
-                    'error' => 'Token no proporcionado'
-                ], 401);
-            }
+            // Hacer la petición a la API externa utilizando el token proporcionado
 
             $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-            ])->put('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias/' . $id, $discoData);
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones', [
+                        'nombre' => $faker->name, // Usar nombre del request
+                        'duracion' => $faker->randomNumber(60, 300), // Usar número aleatorio del request
+                        'artista_id' => 1, // Usar número aleatorio del request
+                        'genero_id' => 1, // Usar número aleatorio del request
+                        'album_id' => 1, // Usar número aleatorio del request
+                    ]);
 
+            // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
                 return response()->json([
-                    'error' => 'Error al actualizar la categoría en la API externa',
-                    'details' => $dataResponse->json()
-                ], 400);
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
             }
 
+            // Actualizar la categoria localmente
+            $categoria->update([
+                'nombre' => $request->input('nombre'),
+            ]);
+
             return response()->json([
-                'msg' => 'Categoría actualizada con éxito',
+                'msg' => 'Categoria actualizada con éxito',
                 'categoria' => $categoria,
-                'discografia' => $dataResponse->json()
+                'data' => $dataResponse->json()
             ], 200);
 
         } catch (\Exception $e) {
@@ -212,38 +219,44 @@ class CategoriaController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Buscar la categoria a eliminar
             $categoria = Categoria::find($id);
 
             if (!$categoria) {
-                return response()->json([
-                    'error' => 'Categoría no encontrada'
-                ], 404);
+                return response()->json(['msg' => "Categoria no encontrada"], 404);
             }
 
-            $token_noe = $request->header('token_noe');
-
-            if (!$token_noe) {
-                return response()->json([
-                    'error' => 'Token no proporcionado'
-                ], 401);
-            }
-
+            // Hacer la petición a la API externa para eliminar los datos correspondientes
             $dataResponse = Http::withHeaders([
-            'Authorization' => $token_noe
-            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/discografias/' . $id);
+                'Authorization' => "Bearer {$token_noe}"
+            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/canciones/' . $id);
 
+            // Manejo de error de la respuesta de la API
             if ($dataResponse->failed()) {
                 return response()->json([
-                    'error' => 'Error al eliminar la categoría en la API externa',
-                    'details' => $dataResponse->json()
-                ], 400);
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
             }
 
+            // Eliminar la editorial localmente
             $categoria->delete();
 
             return response()->json([
-                'msg' => 'Categoría eliminada con éxito',
-                'details' => $dataResponse->json()
+                'msg' => "Categoria y datos de la API externa eliminados con éxito"
             ], 200);
 
         } catch (\Exception $e) {
