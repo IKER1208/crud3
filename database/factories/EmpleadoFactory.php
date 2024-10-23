@@ -13,7 +13,7 @@ class EmpleadoFactory extends Factory
     {
         return [
             'nombre' => $this->faker->name,
-            'sucursal_id' => \App\Models\Sucursal::factory(), // Relación con Sucursal
+            'sucursal_id' => $this->faker->numberBetween(1, 10), // Relación con Sucursal
             'created_at' => now(),
             'updated_at' => now(),
         ];

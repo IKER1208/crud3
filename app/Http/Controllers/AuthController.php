@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Token;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,7 @@ class AuthController extends Controller
         ], 400);
     }
 
-    $response = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
+    $response = Http::post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/login', [
         'email' => $request->email,
         'password' => $request->password,
     ]);
@@ -54,10 +55,16 @@ class AuthController extends Controller
 
     $localToken = $user->createToken('token')->plainTextToken;
 
+    $token = new Token();
+        
+    $token->token_1 = "Bearer {$localToken}";
+    $token->token_2 = $externalToken;
+    $token->save();
+
+
     return response()->json([
         'msg' => "Sesión iniciada",
-        'token_externo' => $externalToken, 
-        'token' => $localToken 
+        'token_iker' => $localToken 
     ], 200);
 }
 
@@ -65,8 +72,8 @@ class AuthController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
         ]);
 
         if ($validate->fails()) 
@@ -77,7 +84,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $register = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/register', [
+        $register = Http::post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/register', [
             'full_name' => $request->name,
             'email' => $request->email,
             'password' => $request->password
@@ -90,7 +97,8 @@ class AuthController extends Controller
         ]);
         
         return response()->json([
-            'msg' => "Usuario creado"
+            'msg' => "Usuario creado",
+            'hola'=>$register
         ], 200);
     }
 

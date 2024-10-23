@@ -3,257 +3,262 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Sucursal;
 use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\Controller;
+use App\Models\Sucursal;
+use App\Models\Token;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Validator;
+
 class SucursalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        
+        $token_iker = $request->header('Authorization');
+
+        // Buscar el token correspondiente
+        $token_noe = Token::where('token_1', $token_iker)->first();
+        $token_noe = $token_noe->token_2;
+
         try {
+            // Obtener todos los sucursales de la base de datos local
             $sucursales = Sucursal::all();
-    
-            $tokenResponse = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
-                "email" => "noe@juadsdaaaaaaaaaaazn.iker",
-                "password" => "password"
-            ]);
-    
-            if ($tokenResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al autenticar con la API externa'
-                ], 400); 
-            }
-    
-            $token = $tokenResponse->json('token');
-    
+
+            // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
-                'Authorization' => "Bearer {$token}"
-            ])->get('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/singles');
-    
-            if ($dataResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400); 
-            }
-    
+                'Authorization' => "Bearer {$token_noe}"
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos');
+
+            // Devolver la respuesta con las sucursales y los datos de la API externa
             return response()->json([
                 'msg' => 'Listado de sucursales',
                 'sucursales' => $sucursales,
-                'singles' => $dataResponse->json() 
-            ], 200); 
+                'generos' => $dataResponse->json()
+            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al comunicarse con la API externa'
-            ], 500); 
+            ], 500);
         }
     }
-    public function show($id){
-        $sucursal = Sucursal::find($id);
-        if (!$sucursal) 
-        {
-            return response()->json([
-                'msg' => 'No se encontró la sucursal'
-            ], 404); 
-        }
-   
-        try 
-        {
-            $tokenResponse = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
-                "email" => "noe@juadsdaaaaaaaaaaazn.iker",
-                "password" => "password"
-            ]);
-   
-            
-            if ($tokenResponse->failed()) 
-            {
+
+    public function show($id, Request $request)
+    {
+        try {
+            $sucursal = Sucursal::find($id);
+
+            $token_iker = $request->header('Authorization');
+
+            // Buscar el token correspondiente
+            $token_noe = Token::where('token_1', $token_iker)->first();
+            $token_noe = $token_noe->token_2;
+
+            if (!$sucursal) {
                 return response()->json([
-                    'error' => 'Error al autenticar con la API externa'
-                ], 400); 
+                    'msg' => 'No se encontró la sucursal'
+                ], 404);
             }
-   
-            $token = $tokenResponse->json('token');
-   
+
+            // Hacer la petición a la API externa utilizando el token proporcionado
             $dataResponse = Http::withHeaders([
-                'Authorization' => "Bearer {$token}"
-            ])->get('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/singles/' . $id);
-   
-            if ($dataResponse->failed()) {
-                return response()->json([
-                    'error' => 'Error al obtener datos de la API externa'
-                ], 400); 
-            }
-   
+                'Authorization' => "Bearer {$token_noe}"
+            ])->get('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos/' . $id);
+
             return response()->json([
-                'msg' => 'sucursal encontrada',
+                'msg' => 'Sucursal encontrada',
                 'sucursal' => $sucursal,
                 'data' => $dataResponse->json()
-            ], 200); 
+            ], 200);
+
         } catch (\Exception $e) {
-           
             return response()->json([
                 'error' => 'Error al comunicarse con la API externa'
-            ], 500); 
+            ], 500);
         }
     }
+
     public function store(Request $request)
     {
+        try {
+            $token_iker = $request->header('Authorization');
 
-            try {
-                $request->validate([
-                    'nombre' => 'required|string|max:255',
-                    'direccion' => 'required|string|max:255',
-                ]);
-        
-                $faker = Faker::create();
-        
-                $sucursal = new Sucursal();
-                $sucursal->nombre = $request->input('nombre'); 
-                $sucursal->direccion = $request->input('direccion');
-                $sucursal->save();
-        
-                $tokenResponse = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
-                    "email" => "noe@juadsdaaaaaaaaaaazn.iker",
-                    "password" => "password"
-                ]);
-            
-                if ($tokenResponse->failed()) {
-                    return response()->json([
-                        'error' => 'Error al autenticar con la API externa'
-                    ], 400);
-                }
-        
-                $token = $tokenResponse->json('token');
-        
-                $singleData = [
-                    'nombre' => $faker->name,
-                    'formato' => $faker->randomElement(['CD', 'Vinilo', 'Digital']),
-                ];
-        
-                $dataResponse = Http::withHeaders([
-                    'Authorization' => "Bearer {$token}"
-                ])->post("https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/singles", $singleData);
-            
-                if ($dataResponse->failed()) {
-                    return response()->json([
-                        'error' => 'Error al crear el single en la API externa',
-                        'details' => $dataResponse->json() 
-                    ], 400);
-                }
-        
-                $single = $dataResponse->json();
-                \Log::info('Respuesta de la API externa:', $single);
-        
-                return response()->json([
-                    'msg' => 'sucursal creada',
-                    'sucursal' => $sucursal,
-                    'data' => $single 
-                ], 201);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
-                ], 500);
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
             }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|required',
+                'direccion' => 'string|required',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'error' => $validate->errors()
+                ], 400);
+            }
+
+            $faker = Faker::create();
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos', [
+                'nombre' => $faker->name, // Usar nombre del request
+                'descripcion' => $faker->sentence, // Usar dirección del request
+            ]);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Crear la sucursal localmente
+            $sucursal = Sucursal::create([
+                'nombre' => $request->input('nombre'),
+                'direccion' => $request->input('direccion'),
+            ]);
+
+            return response()->json([
+                'msg' => 'Sucursal creada con éxito',
+                'sucursal' => $sucursal,
+                'data' => $dataResponse->json()
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)
-    {try {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'direccion' => 'required|string|max:255',
+    {
+        try {
+            $token_iker = $request->header('Authorization');
 
-        ]);
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
 
-        $faker = Faker::create();
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
 
-        $sucursal = Sucursal::find($id);
-        if (!$sucursal) {
+            $token_noe = $token_noe_record->token_2;
+
+            // Validación de los datos recibidos
+            $validate = Validator::make($request->all(), [
+                'nombre' => 'string|max:128|required',
+                'direccion' => 'string|max:255|required',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'error' => $validate->errors()
+                ], 400);
+            }
+
+            // Buscar la sucursal a actualizar
+            $sucursal = Sucursal::find($id);
+
+            if (!$sucursal) {
+                return response()->json([
+                    'msg' => 'Sucursal no encontrada'
+                ], 404);
+            }
+
+            $faker = Faker::create();
+            // Hacer la petición a la API externa utilizando el token proporcionado
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->post('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos', [
+                'nombre' => $faker->name, // Usar nombre del request
+                'descripcion' => $faker->sentence, // Usar dirección del request
+            ]);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Actualizar la sucursal localmente
+            $sucursal->update([
+                'nombre' => $request->input('nombre'),
+                'direccion' => $request->input('direccion'),
+            ]);
+
             return response()->json([
-                'msg' => 'No se encontró la sucursal'
-            ], 404); 
-        }
+                'msg' => 'Sucursal actualizada con éxito',
+                'sucursal' => $sucursal,
+                'data' => $dataResponse->json()
+            ], 200);
 
-        $tokenResponse = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
-            "email" => "noe@juadsdaaaaaaaaaaazn.iker",
-            "password" => "password"
-        ]);
-    
-        if ($tokenResponse->failed()) {
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al autenticar con la API externa'
-            ], 400); 
+                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+            ], 500);
         }
-    
-        $token = $tokenResponse->json('token');
-
-        $sucursal->nombre = $request->input('nombre');
-        $sucursal->direccion = $request->input('direccion');
-        $sucursal->save(); 
-    
-        $singleData = [
-            'nombre' => $faker->name,
-            'formato' => $faker->randomElement(['CD', 'Vinilo', 'Digital']),
-        ];
-
-       
-        $dataResponse = Http::withHeaders([
-            'Authorization' => "Bearer {$token}"
-        ])->put("https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/singles/". $id , $singleData);
-    
-        if ($dataResponse->failed()) {
-            return response()->json([
-                'error' => 'Error al actualizar el single en la API externa'
-            ], 400);
-        }
-    
-        return response()->json([
-            'msg' => 'sucursal actualizado con éxito',
-            'sucursal' => $sucursal,
-            'data' => $dataResponse->json() 
-        ], 200); 
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
-        ], 500); 
     }
-    }
 
-    public function destroy($id)
-    {try {
-        $tokenResponse = Http::post('https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/login', [
-            "email" => "noe@juadsdaaaaaaaaaaazn.iker",
-            "password" => "password"
-        ]);
+    public function destroy($id, Request $request)
+    {
+        try {
+            $token_iker = $request->header('Authorization');
 
-        if ($tokenResponse->failed()) {
+            // Buscar el token más reciente correspondiente
+            $token_noe_record = Token::where('token_1', $token_iker)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // Verificar si se encontró el token
+            if (!$token_noe_record) {
+                return response()->json(['error' => 'Token no encontrado'], 401);
+            }
+
+            $token_noe = $token_noe_record->token_2;
+
+            // Buscar la sucursal a eliminar
+            $sucursal = Sucursal::find($id);
+
+            if (!$sucursal) {
+                return response()->json(['msg' => "Sucursal no encontrada"], 404);
+            }
+
+            // Hacer la petición a la API externa para eliminar los datos correspondientes
+            $dataResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token_noe}"
+            ])->delete('https://710e-2806-101e-b-2c16-7424-7dea-e6e6-4762.ngrok-free.app/generos/' . $id);
+
+            // Manejo de error de la respuesta de la API
+            if ($dataResponse->failed()) {
+                return response()->json([
+                    'error' => $dataResponse->json() // Proporcionar detalles del error
+                ], $dataResponse->status());
+            }
+
+            // Eliminar la sucursal localmente
+            $sucursal->delete();
+
+            return response()->json(['msg' => 'Sucursal eliminada con éxito'], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al autenticar con la API externa'
-            ], 400); 
+                'error' => 'Error al comunicarse con la API externa: ' . $e->getMessage()
+            ], 500);
         }
-
-        $token = $tokenResponse->json('token');
-
-        $dataResponse = Http::withHeaders([
-            'Authorization' => "Bearer {$token}"
-        ])->delete("https://7902-2806-101e-b-2c16-794d-213b-c523-e874.ngrok-free.app/singles/". $id );
-
-        if ($dataResponse->failed()) {
-            return response()->json([
-                'error' => 'Error al eliminar la resena en la API externa'
-            ], 400); 
-        }
-
-        return response()->json([
-            'msg' => 'sucursal eliminado con éxito',
-            'data' => $dataResponse->json()
-        ], 200); 
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Error al comunicarse con la API externa'
-        ], 500);
-    }
     }
 }
-

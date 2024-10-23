@@ -12,8 +12,8 @@ class PrestamoFactory extends Factory
     public function definition()
     {
         return [
-            'cliente_id' => \App\Models\Cliente::factory(), // Relación con Cliente
-            'libro_id' => \App\Models\Libro::factory(), // Relación con Libro
+            'cliente_id' => $this->faker->numberBetween(1, 10), // Relación con Cliente
+            'libro_id' => $this->faker->numberBetween(1, 10), // Relación con Libro
             'fecha_prestamo' => $this->faker->dateTime,
             'fecha_devolucion' => $this->faker->dateTime,
             'created_at' => now(),
